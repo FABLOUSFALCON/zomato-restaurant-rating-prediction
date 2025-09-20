@@ -9,7 +9,7 @@ A production-ready machine learning regression system that predicts restaurant r
 
 ## 🌟 Key Features
 
-- **Advanced ML Pipeline**: XGBoost, LightGBM, and CatBoost models with 100+ Optuna optimization trials
+- **Advanced ML Pipeline**: XGBoost, Random Forest, and CatBoost models with 100+ Optuna optimization trials
 - **90+ Engineered Features**: From geolocation analysis, NLP processing, and business intelligence
 - **Production API**: FastAPI backend with real-time predictions and batch processing
 - **Interactive Frontend**: Responsive web interface with live predictions and visualizations
@@ -57,7 +57,7 @@ Our best-performing XGBoost regression model achieved exceptional results:
 ### Machine Learning
 
 - **XGBoost**: Primary gradient boosting model
-- **LightGBM & CatBoost**: Alternative ensemble models
+- **Random Forest & CatBoost**: Alternative ensemble models
 - **scikit-learn**: Feature engineering and preprocessing
 - **NLTK**: Natural language processing for reviews
 
@@ -201,7 +201,7 @@ GET /health
 
 1. **Data Preprocessing**: Clean text, handle missing values, encode categories
 2. **Feature Engineering**: Extract 90+ features from base columns
-3. **Model Training**: Train ensemble of XGBoost, LightGBM, CatBoost
+3. **Model Training**: Train ensemble of XGBoost, Random Forest, CatBoost
 4. **Hyperparameter Optimization**: Optuna-based parameter tuning
 5. **Model Validation**: Cross-validation and holdout testing
 6. **Model Registration**: Save to MLflow registry
@@ -217,11 +217,13 @@ Our advanced feature engineering creates 90+ features from 30 base columns:
 
 ### Model Comparison
 
-| Model    | Accuracy | MAE  | R² Score | Training Time |
-| -------- | -------- | ---- | -------- | ------------- |
-| XGBoost  | 94.2%    | 0.15 | 0.89     | 12 min        |
-| LightGBM | 93.8%    | 0.16 | 0.87     | 8 min         |
-| CatBoost | 93.5%    | 0.17 | 0.86     | 15 min        |
+| Model             | RMSE    | R² Score | MAE     | Test MSE   | Duration |
+| ----------------- | ------- | -------- | ------- | ---------- | -------- |
+| **XGBoost**       | 0.123   | 0.954    | 0.053   | 0.019      | 25.5s    |
+| **Random Forest** | 0.124   | 0.953    | 0.051   | 0.020      | 22.5s    |
+| **CatBoost**      | 0.173   | -        | 0.060   | -          | 43.7s    |
+
+*Note: XGBoost achieved the best overall performance with 95.4% variance explained and exceptional accuracy.*
 
 ## 🔍 Data Pipeline
 
