@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Guide to Zomato Data Cleaning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: The application is designed as an interactive, step-by-step guide, transforming the linear report into an explorable experience. The structure is: 1. A high-level dashboard with initial dataset stats. 2. An interactive 'Cleaning Workflow' section where users click on cards representing each data column to see the cleaning strategy. This task-oriented approach is more engaging than reading a long document. 3. A dedicated 'Missing Data Analysis' section with a chart to visualize the problem's scale. 4. A final 'Schema Transformation' summary table. This structure was chosen to guide the user from a broad overview to specific details and finally to a summary of the outcome, making the complex cleaning process digestible and easy to navigate. -->
+    <!-- Visualization & Content Choices: 
+    - Initial Stats: Goal is to inform. Presented as large numbers in cards for quick comprehension.
+    - Cleaning Workflow: Goal is to organize and explain. Presented as interactive HTML/CSS cards. Interaction is a click-to-reveal accordion, which is less disruptive than modals and keeps users in the flow. Justification: This makes exploring each column's cleaning process self-directed and focused.
+    - Missing Data: Goal is to compare and inform. Presented as a Chart.js horizontal bar chart. Interaction is hover-to-see-tooltip. Justification: A bar chart provides a more immediate visual comparison of the magnitude of missing data across columns than a simple table. Library: Chart.js (Canvas).
+    - Schema Transformation: Goal is to summarize. Presented as a clear HTML table for a direct before-and-after comparison. Justification: A table is the most effective way to display structured schema changes.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF8;
+            color: #4A4A4A;
+        }
+        .nav-button {
+            transition: all 0.3s ease;
+        }
+        .nav-button.active, .nav-button:hover {
+            color: #C05621;
+            border-bottom-color: #C05621;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .details-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .details-content.open {
+            max-height: 500px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 450px;
+            max-height: 60vh;
+        }
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-20 border-b border-gray-200">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <h1 class="text-xl md:text-2xl font-bold text-gray-800">Zomato Data Cleaning Guide</h1>
+                <nav class="hidden md:flex items-center space-x-8">
+                    <a href="#overview" class="nav-button text-gray-600 border-b-2 border-transparent pb-1">Overview</a>
+                    <a href="#workflow" class="nav-button text-gray-600 border-b-2 border-transparent pb-1">Workflow</a>
+                    <a href="#missing-data" class="nav-button text-gray-600 border-b-2 border-transparent pb-1">Missing Data</a>
+                    <a href="#final-schema" class="nav-button text-gray-600 border-b-2 border-transparent pb-1">Final Schema</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8 md:py-12">
+
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Initial Dataset Snapshot</h2>
+            <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-10">
+                This guide provides an interactive walkthrough of the cleaning and preparation process for the Zomato dataset. The initial step is to understand the dataset's basic structure, size, and the nature of its columns before any transformations are applied.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <p class="text-4xl font-bold text-orange-600">51,717</p>
+                    <p class="text-gray-500 mt-1">Rows</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <p class="text-4xl font-bold text-orange-600">17</p>
+                    <p class="text-gray-500 mt-1">Columns</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                    <p class="text-4xl font-bold text-orange-600">~65.6 MB</p>
+                    <p class="text-gray-500 mt-1">Memory Usage</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="workflow" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Interactive Cleaning Workflow</h2>
+            <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-10">
+                The core of data preparation involves making strategic decisions for each column. Some columns are dropped, others are cleaned and transformed, while many require careful handling of missing values. Click on each column below to see the specific action plan and the reasoning behind it.
+            </p>
+            <div id="workflow-grid" class="space-y-4">
+            </div>
+        </section>
+        
+        <section id="missing-data" class="mb-16 scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Missing Data Analysis</h2>
+            <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-10">
+                A significant challenge in this dataset is the presence of missing values. The chart below visualizes the percentage of nulls in each column. Understanding this distribution is crucial for deciding on an imputation or removal strategy to create a robust dataset for analysis.
+            </p>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                <div class="chart-container">
+                    <canvas id="missingDataChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="final-schema" class="scroll-mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-800 mb-4">Proposed Schema Transformation</h2>
+             <p class="text-lg text-center text-gray-600 max-w-3xl mx-auto mb-10">
+                After applying all cleaning and transformation steps, the dataset's schema will be significantly different. This table summarizes the changes, showing the journey from the original raw data to a clean, analysis-ready format. This final structure is optimized for feature engineering and machine learning modeling.
+            </p>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-gray-50 border-b border-gray-200">
+                        <tr>
+                            <th class="p-4 font-semibold">Column</th>
+                            <th class="p-4 font-semibold">Original Dtype</th>
+                            <th class="p-4 font-semibold">Final Dtype</th>
+                            <th class="p-4 font-semibold">Action Taken</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schema-table-body" class="divide-y divide-gray-200">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 mt-12 border-t border-gray-200">
+        <p class="text-gray-500">The dataset is now cleaned and prepared for Exploratory Data Analysis and Modeling.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const cleaningData = [
+                {
+                    column: 'url',
+                    icon: '🗑️',
+                    category: 'Drop',
+                    short_desc: 'Contains redundant URL information.',
+                    reason: 'The URL contains the restaurant name and location, which are already present in other columns. It offers no unique information for analysis.',
+                    action: 'Drop the column entirely after potentially using it to help fill missing location values.'
+                },
+                {
+                    column: 'address',
+                    icon: '🗑️',
+                    category: 'Drop',
+                    short_desc: 'Detailed address, redundant with location.',
+                    reason: 'The full address is too granular and largely redundant given the `location` column, which provides a more usable geographic grouping.',
+                    action: 'Use it to help impute missing `location` values, then drop the column.'
+                },
+                {
+                    column: 'phone',
+                    icon: '🗑️',
+                    category: 'Drop',
+                    short_desc: 'Contact numbers not useful for analysis.',
+                    reason: 'Phone numbers are unique identifiers that provide no analytical value for predicting ratings or understanding trends.',
+                    action: 'Drop the column.'
+                },
+                {
+                    column: 'reviews_list',
+                    icon: '🗑️',
+                    category: 'Drop',
+                    short_desc: 'Raw text reviews, complex for this analysis.',
+                    reason: 'While containing rich information, processing this raw text requires advanced NLP techniques that are beyond the scope of this initial cleaning phase. The `votes` column already quantifies review sentiment.',
+                    action: 'Drop the column to simplify the model.'
+                },
+                {
+                    column: 'menu_item',
+                    icon: '🗑️',
+                    category: 'Drop',
+                    short_desc: 'Mostly empty and not useful.',
+                    reason: 'This column is almost entirely empty, making it unusable for any form of analysis or feature engineering.',
+                    action: 'Drop the column due to a high volume of missing data.'
+                },
+                {
+                    column: 'rate',
+                    icon: '✨',
+                    category: 'Clean & Transform',
+                    short_desc: 'Target variable, needs cleaning.',
+                    reason: 'This is the primary target variable but is stored as a string (e.g., "4.1/5") and contains non-numeric values like "NEW" or "-". It also has missing values.',
+                    action: 'Extract the numeric part (e.g., 4.1), convert the column to a float data type, and handle the missing values (e.g., using mean/median imputation).'
+                },
+                {
+                    column: 'approx_cost(for two people)',
+                    icon: '✨',
+                    category: 'Clean & Transform',
+                    short_desc: 'String with commas, needs conversion.',
+                    reason: 'The cost is stored as a string with commas (e.g., "1,000"), which prevents numerical calculations.',
+                    action: 'Remove commas, convert the column to a numeric (integer or float) type, and handle missing values.'
+                },
+                {
+                    column: 'online_order',
+                    icon: '🔄',
+                    category: 'Encode',
+                    short_desc: 'Binary "Yes/No" feature.',
+                    reason: 'Categorical "Yes/No" values need to be converted into a numerical format for machine learning models.',
+                    action: 'Encode "Yes" to 1 and "No" to 0.'
+                },
+                {
+                    column: 'book_table',
+                    icon: '🔄',
+                    category: 'Encode',
+                    short_desc: 'Binary "Yes/No" feature.',
+                    reason: 'Similar to `online_order`, this categorical feature must be converted to a numeric format.',
+                    action: 'Encode "Yes" to 1 and "No" to 0.'
+                },
+                 {
+                    column: 'location',
+                    icon: '❓',
+                    category: 'Handle Missing',
+                    short_desc: 'Key categorical feature with missing values.',
+                    reason: 'Location is a critical feature for predicting restaurant success. Its missing values need to be addressed to avoid data loss.',
+                    action: 'Impute missing values using information from the `address` or `url` columns, or use the mode (most frequent location).'
+                },
+                {
+                    column: 'rest_type',
+                    icon: '❓',
+                    category: 'Handle Missing',
+                    short_desc: 'Restaurant type with missing values.',
+                    reason: 'The type of restaurant is an important predictor. The column has multiple categories and some missing entries.',
+                    action: 'Clean the categories (e.g., group similar types) and fill missing values, likely with the mode.'
+                },
+                {
+                    column: 'cuisines',
+                    icon: '❓',
+                    category: 'Handle Missing',
+                    short_desc: 'Cuisine type with missing values.',
+                    reason: 'Cuisine is a key factor in restaurant rating and popularity. It has some missing values that need to be handled.',
+                    action: 'Fill missing values, likely with the mode or a placeholder like "Unknown".'
+                },
+                {
+                    column: 'dish_liked',
+                    icon: '❓',
+                    category: 'Handle Missing',
+                    short_desc: 'High percentage of missing values.',
+                    reason: 'This column has a very large number of missing values, making it difficult to use directly. However, it could be engineered into a binary feature.',
+                    action: 'Due to ~45% missing data, consider dropping it or engineering a feature like `has_liked_dishes` (1 if data exists, 0 if not).'
+                },
+                {
+                    column: 'listed_in(type)',
+                    icon: '⚙️',
+                    category: 'Feature Engineering',
+                    short_desc: 'Type of listing, seems useful.',
+                    reason: 'This column represents the meal type the listing falls under (e.g., "Buffet", "Delivery"). It is distinct from `rest_type`.',
+                    action: 'Keep as a categorical feature. May need cleaning for consistency. Renamed to `listing_type`.'
+                },
+                 {
+                    column: 'listed_in(city)',
+                    icon: '⚙️',
+                    category: 'Feature Engineering',
+                    short_desc: 'Neighborhood of listing.',
+                    reason: 'This column provides another layer of location information, possibly a broader neighborhood area than `location`.',
+                    action: 'Keep as a categorical feature. Renamed to `listing_city`.'
+                },
+                {
+                    column: 'votes',
+                    icon: '✅',
+                    category: 'Keep As Is',
+                    short_desc: 'Numeric feature with no issues.',
+                    reason: 'This is a clean integer column representing the number of votes. It is a strong feature and requires no cleaning.',
+                    action: 'Keep as is.'
+                }
+            ];
+
+            const schemaData = [
+                { column: 'url', original: 'object', final: '-', action: 'Dropped' },
+                { column: 'address', original: 'object', final: '-', action: 'Dropped' },
+                { column: 'online_order', original: 'object', final: 'int', action: 'Encoded (0/1)' },
+                { column: 'book_table', original: 'object', final: 'int', action: 'Encoded (0/1)' },
+                { column: 'rate', original: 'object', final: 'float', action: 'Cleaned & Converted' },
+                { column: 'votes', original: 'int64', final: 'int64', action: 'Kept' },
+                { column: 'phone', original: 'object', final: '-', action: 'Dropped' },
+                { column: 'location', original: 'object', final: 'object', action: 'Cleaned & Imputed' },
+                { column: 'rest_type', original: 'object', final: 'object', action: 'Cleaned & Imputed' },
+                { column: 'dish_liked', original: 'object', final: 'object', action: 'Cleaned or Dropped' },
+                { column: 'cuisines', original: 'object', final: 'object', action: 'Cleaned & Imputed' },
+                { column: 'approx_cost(for two people)', original: 'object', final: 'float', action: 'Cleaned & Converted' },
+                { column: 'reviews_list', original: 'object', final: '-', action: 'Dropped' },
+                { column: 'menu_item', original: 'object', final: '-', action: 'Dropped' },
+                { column: 'listed_in(type)', original: 'object', final: 'object', action: 'Renamed to listing_type' },
+                { column: 'listed_in(city)', original: 'object', final: 'object', action: 'Renamed to listing_city' },
+            ];
+
+            const missingValuesData = {
+                'rate': 15.03,
+                'approx_cost(for two people)': 0.67,
+                'location': 0.04,
+                'rest_type': 0.44,
+                'cuisines': 0.09,
+                'dish_liked': 45.32,
+                'phone': 2.33
+            };
+
+            const workflowGrid = document.getElementById('workflow-grid');
+            cleaningData.forEach((item, index) => {
+                const cardHTML = `
+                    <div class="card bg-white rounded-xl shadow-sm border border-gray-200 cursor-pointer">
+                        <div class="flex items-center p-4" data-index="${index}">
+                            <div class="text-2xl mr-4">${item.icon}</div>
+                            <div class="flex-grow">
+                                <h3 class="font-bold text-gray-800">${item.column}</h3>
+                                <p class="text-sm text-gray-500">${item.short_desc}</p>
+                            </div>
+                            <div class="text-sm font-semibold py-1 px-3 rounded-full ${getCategoryColor(item.category)}">${item.category}</div>
+                            <svg class="w-6 h-6 ml-4 text-gray-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div class="details-content bg-gray-50 px-6 border-t border-gray-200">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+                                <div>
+                                    <h4 class="font-semibold text-gray-700 mb-2">Reasoning</h4>
+                                    <p class="text-gray-600 text-sm">${item.reason}</p>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-700 mb-2">Proposed Action</h4>
+                                    <p class="text-gray-600 text-sm">${item.action}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                workflowGrid.innerHTML += cardHTML;
+            });
+
+            workflowGrid.addEventListener('click', (e) => {
+                const header = e.target.closest('[data-index]');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const arrow = header.querySelector('svg');
+                    content.classList.toggle('open');
+                    arrow.classList.toggle('rotate-180');
+                }
+            });
+
+            function getCategoryColor(category) {
+                switch(category) {
+                    case 'Drop': return 'bg-red-100 text-red-800';
+                    case 'Clean & Transform': return 'bg-blue-100 text-blue-800';
+                    case 'Encode': return 'bg-purple-100 text-purple-800';
+                    case 'Handle Missing': return 'bg-yellow-100 text-yellow-800';
+                    case 'Feature Engineering': return 'bg-green-100 text-green-800';
+                    case 'Keep As Is': return 'bg-teal-100 text-teal-800';
+                    default: return 'bg-gray-100 text-gray-800';
+                }
+            }
+            
+            const schemaTableBody = document.getElementById('schema-table-body');
+            schemaData.forEach(item => {
+                const row = `
+                    <tr>
+                        <td class="p-4 font-medium text-gray-800">${item.column}</td>
+                        <td class="p-4 text-gray-600">${item.original}</td>
+                        <td class="p-4 text-gray-600">${item.final}</td>
+                        <td class="p-4 text-gray-600">${item.action}</td>
+                    </tr>
+                `;
+                schemaTableBody.innerHTML += row;
+            });
+            
+            const ctx = document.getElementById('missingDataChart').getContext('2d');
+            const sortedMissingData = Object.entries(missingValuesData).sort(([,a],[,b]) => a-b);
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: sortedMissingData.map(item => item[0]),
+                    datasets: [{
+                        label: '% Missing Values',
+                        data: sortedMissingData.map(item => item[1]),
+                        backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                        borderColor: 'rgba(239, 68, 68, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.raw.toFixed(2)}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage of Missing Values (%)'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+
+            const navLinks = document.querySelectorAll('nav a');
+            const sections = document.querySelectorAll('section');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 80) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').slice(1) === current) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+        });
+    </script>
+</body>
+</html>

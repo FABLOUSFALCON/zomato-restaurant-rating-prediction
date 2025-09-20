@@ -1,0 +1,51 @@
+name: zomato_prediction
+channels:
+  - conda-forge
+dependencies:
+  # --- Core & Environment ---
+  - python=3.10
+  - pip
+  - jupyterlab
+  - ipykernel
+  - ipywidgets
+  - notebook
+  - nodejs
+
+  # --- Data Handling & Analysis ---
+  - pandas
+  - numpy
+  - scikit-learn
+
+  # --- Visualization ---
+  - matplotlib
+  - seaborn
+  - plotly
+  - wordcloud
+
+  # --- Machine Learning & NLP ---
+  - xgboost
+  - lightgbm
+  - catboost
+  - nltk
+  - spacy
+
+  # --- Utilities & Tooling ---
+  - loguru
+  - tqdm
+  - typer
+  - ruff
+  - isort
+  - jupyterlab_code_formatter
+  - pytest
+  - black
+  - mlflow
+  - optuna
+
+  # --- PIP Section for specific packages ---
+  - pip:
+    - python-dotenv
+    - mkdocs
+    - ftfy
+    # JupyterLab IDE Extensions
+    # Editable install for your project's source code
+    - -e .

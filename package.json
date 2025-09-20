@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "unified-language-server": "^4.0.1"
+  }
+}
