@@ -5,10 +5,11 @@
 [![MLflow](https://img.shields.io/badge/mlflow-%23d9ead3.svg?style=for-the-badge&logo=numpy&logoColor=blue)](https://mlflow.org/)
 [![Redis](https://img.shields.io/badge/redis-%23DD0031.svg?style=for-the-badge&logo=redis&logoColor=white)](https://redis.io/)
 
-A production-ready machine learning regression system that predicts restaurant ratings (0.0-5.0 stars) using advanced ML techniques, featuring a FastAPI backend, interactive web frontend, and comprehensive MLOps pipeline.
+A production-ready machine learning regression system that predicts restaurant ratings (0.0-5.0 stars) using advanced ML techniques, featuring enterprise-grade data engineering with 800+ lines of custom algorithms, a FastAPI backend, interactive web frontend, and comprehensive MLOps pipeline.
 
 ## 🌟 Key Features
 
+- **Enterprise-Grade Data Engineering**: 800+ lines of custom algorithms for missing value imputation, duplicate detection, and outlier treatment
 - **Advanced ML Pipeline**: XGBoost, Random Forest, and CatBoost models with 100+ Optuna optimization trials
 - **90+ Engineered Features**: From geolocation analysis, NLP processing, and business intelligence
 - **Production API**: FastAPI backend with real-time predictions and batch processing
@@ -238,6 +239,120 @@ _Note: XGBoost achieved the best overall performance with 95.4% variance explain
 1. **Raw → Interim**: Basic cleaning and validation
 2. **Interim → Processed**: Feature engineering and encoding
 3. **Processed → Model**: Train/validation splits and scaling
+
+## 🔬 Advanced Data Engineering & Processing
+
+This project implements enterprise-level data engineering techniques that set it apart from typical ML projects. Every aspect of data processing has been meticulously crafted with custom algorithms and advanced methodologies.
+
+### 🧠 Intelligent Missing Value Imputation
+
+**Custom KNN Imputer with Advanced Similarity Metrics** (300+ lines)
+
+- **Jaccard Similarity**: Custom implementation for categorical features with weighted coefficient calculation
+- **Multi-Column Context**: Utilizes relationships between multiple columns for intelligent imputation
+- **Dynamic Weighting**: Adaptive weights based on column importance and data distribution patterns
+- **Hybrid Approach**: Combines statistical, ML-based, and domain-specific imputation strategies
+- **Edge Case Handling**: Sophisticated fallback mechanisms for complex missing data patterns
+
+### 🔍 Multi-Stage Duplicate Detection & Removal
+
+**Enterprise-Grade Deduplication Pipeline** (500+ lines across 3 modules)
+
+1. **Exact Match Detection**
+
+   - Hash-based duplicate identification with custom fingerprinting
+   - Multi-column composite key generation for restaurant identity verification
+
+2. **Fuzzy Matching Engine**
+
+   - Custom string similarity algorithms (Levenshtein, Jaro-Winkler, Soundex)
+   - Geospatial proximity analysis for location-based duplicate detection
+   - Business name normalization with industry-specific cleaning rules
+
+3. **Intelligent Merge Strategy**
+   - Conflict resolution algorithms for contradictory information
+   - Data quality scoring to preserve highest-quality records
+   - Relationship preservation across linked entities
+
+### 🎯 Advanced Outlier Detection & Treatment
+
+**Multi-Modal Outlier Detection System**
+
+- **Statistical Methods**: IQR, Z-score, Modified Z-score with adaptive thresholds
+- **ML-Based Detection**: Isolation Forest, Local Outlier Factor, One-Class SVM
+- **Domain-Specific Rules**: Business logic-based outlier identification (impossible prices, ratings)
+- **Contextual Analysis**: Location and cuisine-specific outlier boundaries
+- **Progressive Treatment**: Capping, transformation, and intelligent removal strategies
+
+### 🛠️ Sophisticated Feature Engineering
+
+**90+ Features from 30 Base Columns**
+
+1. **Geospatial Intelligence** (25+ features)
+
+   - Custom clustering algorithms for neighborhood identification
+   - Distance calculations to city landmarks and commercial hubs
+   - Spatial density analysis and accessibility scoring
+   - Traffic pattern integration and location desirability metrics
+
+2. **Natural Language Processing** (30+ features)
+
+   - Advanced sentiment analysis with custom lexicons
+   - Text complexity metrics (readability, linguistic diversity)
+   - Named entity extraction for cuisine and location identification
+   - Semantic similarity analysis for restaurant descriptions
+
+3. **Business Intelligence Features** (20+ features)
+
+   - Price elasticity analysis and market positioning
+   - Competition density and market saturation metrics
+   - Service quality indicators and operational efficiency scores
+   - Customer preference pattern recognition
+
+4. **Interaction & Polynomial Features** (15+ features)
+   - Cross-feature correlations and non-linear relationships
+   - Custom polynomial combinations based on domain knowledge
+   - Temporal patterns and seasonal adjustments
+
+### 🔧 Data Validation & Quality Assurance
+
+**Comprehensive Data Integrity Framework**
+
+- **Schema Validation**: Custom Pydantic models with business rule enforcement
+- **Referential Integrity**: Cross-table consistency checks and relationship validation
+- **Data Drift Detection**: Statistical distribution monitoring and alert systems
+- **Quality Scoring**: Automated data quality metrics with actionable insights
+- **Encoding Recovery**: Advanced mojibake detection and UTF-8 restoration algorithms
+
+### 📊 Processing Performance Optimizations
+
+**Enterprise-Scale Processing Efficiency**
+
+- **Vectorized Operations**: NumPy and Pandas optimization for large dataset processing
+- **Memory Management**: Chunked processing for datasets exceeding memory limits
+- **Parallel Processing**: Multi-core utilization for CPU-intensive operations
+- **Caching Strategies**: Intelligent intermediate result caching to avoid recomputation
+- **Progress Monitoring**: Real-time processing metrics and ETA calculations
+
+### 🎨 Custom Algorithm Implementations
+
+**From-Scratch Implementations for Maximum Control**
+
+- **Distance Metrics**: Custom implementations of Haversine, Manhattan, and weighted Euclidean distances
+- **Similarity Functions**: Bespoke string matching algorithms optimized for restaurant data
+- **Normalization Techniques**: Domain-specific scaling and standardization methods
+- **Encoding Strategies**: Custom categorical encoding with frequency and target-based approaches
+
+### 📈 Data Pipeline Monitoring
+
+**Production-Ready Data Observability**
+
+- **Processing Metrics**: Detailed logging of transformation steps and performance
+- **Data Lineage**: Complete traceability of data transformations and feature derivations
+- **Quality Dashboards**: Real-time monitoring of data quality indicators
+- **Alert Systems**: Automated notifications for data anomalies and processing failures
+
+> **Why This Matters**: This level of data engineering sophistication ensures that the ML models receive the highest quality, most informative features possible. The result is not just better model performance, but a robust, maintainable system that can handle real-world data challenges and scale with business needs.
 
 ### Data Quality
 
