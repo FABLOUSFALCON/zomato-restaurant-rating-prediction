@@ -29,7 +29,7 @@ Our best-performing XGBoost regression model achieved exceptional results:
 - **MAE**: 0.052 stars (mean absolute error)
 - **MAPE**: 1.58% (mean absolute percentage error)
 - **Practical Accuracy**: 96.07% predictions within ±0.25 stars
-- **Optimization**: 100+ Optuna trials for hyperparameter tuning
+- **Optimization**: 100 Optuna trials with 5-fold cross-validation (~6 hours total optimization)
 
 ## 🏗️ Architecture
 
@@ -217,13 +217,13 @@ Our advanced feature engineering creates 90+ features from 30 base columns:
 
 ### Model Comparison
 
-| Model             | RMSE    | R² Score | MAE     | Test MSE   | Duration |
-| ----------------- | ------- | -------- | ------- | ---------- | -------- |
-| **XGBoost**       | 0.123   | 0.954    | 0.053   | 0.019      | 25.5s    |
-| **Random Forest** | 0.124   | 0.953    | 0.051   | 0.020      | 22.5s    |
-| **CatBoost**      | 0.173   | -        | 0.060   | -          | 43.7s    |
+| Model             | RMSE  | R² Score | MAE   | Test MSE | Champion Model Training | Optuna Optimization (100 trials × 5-fold CV) |
+| ----------------- | ----- | -------- | ----- | -------- | ----------------------- | -------------------------------------------- |
+| **XGBoost**       | 0.123 | 0.954    | 0.053 | 0.019    | ~2 minutes              | ~6 hours                                     |
+| **Random Forest** | 0.124 | 0.953    | 0.051 | 0.020    | ~3 minutes              | ~10 hours                                    |
+| **CatBoost**      | 0.173 | -        | 0.060 | -        | ~5 minutes              | ~12 hours                                    |
 
-*Note: XGBoost achieved the best overall performance with 95.4% variance explained and exceptional accuracy.*
+_Note: XGBoost achieved the best overall performance with 95.4% variance explained and exceptional speed. Training times include both final champion model training and full Optuna hyperparameter optimization with 100 trials using 5-fold cross-validation._
 
 ## 🔍 Data Pipeline
 
