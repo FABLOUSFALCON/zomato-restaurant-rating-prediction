@@ -1,0 +1,2 @@
+*.csv filter=lfs diff=lfs merge=lfs -text
+data/processed/zomato_nlp_features_final.parquet filter=lfs diff=lfs merge=lfs -text
