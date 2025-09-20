@@ -77,39 +77,64 @@ Our best-performing XGBoost regression model achieved exceptional results:
 
 ## 📦 Quick Start
 
-### Option 1: Docker Deployment (Recommended)
+### ⚠️ Important: Environment Setup
+
+**This project requires the complete `newAge` conda environment with 639 dependencies**. Simplified environment files (`environment_clean.yml`, `requirements_focused.txt`) will NOT work due to complex interdependencies between packages, CUDA libraries, and development tools.
+
+### Option 1: Complete Environment Setup (REQUIRED)
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
-cd zomato_prediction
+git clone https://github.com/FABLOUSFALCON/zomato-restaurant-rating-prediction.git
+cd zomato-restaurant-rating-prediction
+
+# Create the complete newAge environment (639 dependencies)
+conda env create -n newAge -f environment.yml
+
+# Activate the environment
+conda activate newAge
+
+# Start the application
+make serve
+```
+
+### Option 2: Alternative Environment Creation
+
+```bash
+# If you need a different environment name:
+conda env create -n zomato-prediction -f environment.yml
+conda activate zomato-prediction
+
+# Start the API server directly
+uvicorn zomato_prediction.api:app --reload --host 0.0.0.0 --port 8000
+```
+
+### Option 3: Docker Deployment (Simplified)
+
+```bash
+# Clone the repository
+git clone https://github.com/FABLOUSFALCON/zomato-restaurant-rating-prediction.git
+cd zomato-restaurant-rating-prediction
 
 # Start the entire stack
-./deploy.sh
+docker-compose up -d
 
 # Access the application
 open http://localhost:8000
 ```
 
-### Option 2: Local Development
+### 🏗️ Environment Complexity Details
 
-```bash
-# Install dependencies
-pip install -r requirements.txt
+This project uses a sophisticated development environment with:
 
-# Set up environment variables
-export MLFLOW_TRACKING_URI=sqlite:///mlflow.db
-export REDIS_URL=redis://localhost:6379
+- **639 total packages** including system libraries, ML frameworks, and development tools
+- **CUDA 12.9** support for GPU acceleration (optional but recommended)
+- **52 core Python packages** with specific version dependencies
+- **Complex interdependencies** that require the complete environment for stability
 
-# Start Redis (required)
-redis-server
+The `environment.yml` contains the complete conda export from the battle-tested `newAge` environment that was used for development and testing. The `requirements_conda.txt` contains the full 639-package conda list export with exact versions. The `requirements.txt` contains only pip packages (incomplete).
 
-# Train models (optional - pre-trained models included)
-python -m zomato_prediction.modeling.train
-
-# Start the API server
-uvicorn zomato_prediction.api:app --reload --host 0.0.0.0 --port 8000
-```
+Attempting to use simplified dependency files will result in import errors and missing functionality.
 
 ## 🔧 Configuration
 

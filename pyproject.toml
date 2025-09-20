@@ -4,8 +4,8 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "zomato_prediction"
-version = "0.0.1"
-description = "This model is made to predict the ratings and sentiment of the customers, on per resturant basis."
+version = "1.0.0"
+description = "Enterprise-grade restaurant rating prediction system with advanced ML and data engineering. Uses battle-tested newAge environment with 600+ dependencies for guaranteed compatibility."
 authors = [
   { name = "Puneet Kumar Mishra" },
 ]
@@ -13,9 +13,37 @@ license = { file = "LICENSE" }
 readme = "README.md"
 classifiers = [
     "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License"
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules"
 ]
-requires-python = "~=3.10.0"
+requires-python = ">=3.10,<3.12"
+
+# Note: This project uses the newAge conda environment for dependency management
+# The environment.yml file contains the complete, battle-tested dependency set
+# requirements_conda.txt contains the full 639-package conda list export
+# requirements.txt contains only pip packages (incomplete)
+# 
+# To install dependencies (RECOMMENDED):
+# conda env create -f environment.yml
+# conda activate newAge
+#
+# Alternative (from conda list):
+# conda create -n newAge
+# conda install --file requirements_conda.txt
+#
+# The dependencies listed below are for reference only - use the conda environment!
+
+dependencies = [
+    "# IMPORTANT: Use 'conda env create -f environment.yml' instead",
+    "# This project requires the complete newAge environment to function properly",
+    "# The dependencies are too complex for simple pip installation",
+]
+
+[project.urls]
+Homepage = "https://github.com/FABLOUSFALCON/zomato-restaurant-rating-prediction"
+Repository = "https://github.com/FABLOUSFALCON/zomato-restaurant-rating-prediction"
+Documentation = "https://github.com/FABLOUSFALCON/zomato-restaurant-rating-prediction#readme"
 
 
 [tool.ruff]

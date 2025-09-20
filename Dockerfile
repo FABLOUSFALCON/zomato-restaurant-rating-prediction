@@ -1,16 +1,14 @@
 # ===================================================================
 # Docker Configuration for Zomato Restaurant Rating Prediction API
-# Multi-stage build for production optimization
+# Uses conda environment for complete dependency management
 # ===================================================================
 
 # Build stage
-FROM python:3.10-slim as builder
+FROM condaforge/mambaforge:latest as builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
+    PYTHONUNBUFFERED=1
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -18,30 +16,28 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Copy environment file
+COPY environment.yml /tmp/environment.yml
 
-# Install Python dependencies
-COPY requirements-production.txt .
-RUN pip install --upgrade pip && \
-    pip install -r requirements-production.txt
+# Create conda environment
+RUN mamba env create -f /tmp/environment.yml && \
+    mamba clean -afy
 
 # Production stage
-FROM python:3.10-slim as production
+FROM condaforge/mambaforge:latest as production
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PATH="/opt/venv/bin:$PATH"
+    PATH="/opt/conda/envs/newAge/bin:$PATH"
 
 # Install runtime dependencies
 RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy virtual environment from builder stage
-COPY --from=builder /opt/venv /opt/venv
+# Copy conda environment from builder stage
+COPY --from=builder /opt/conda/envs/newAge /opt/conda/envs/newAge
 
 # Create non-root user for security
 RUN groupadd --gid 1000 appuser && \
